@@ -1,4 +1,3 @@
-```markdown
 # Developer Portal API
 
 This repository provides a simple Laravel‑based Developer Portal where developers can:
