@@ -1,61 +1,279 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+```markdown
+# Developer Portal API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This repository provides a simple Laravel‑based Developer Portal where developers can:
 
-## About Laravel
+1. **Register** and **Login**  
+2. **Generate an API Key**  
+3. **Manage their users** via a RESTful `/api/users` endpoint  
+4. All user data is partitioned per developer and secured by your API key.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Table of Contents
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Prerequisites](#prerequisites)  
+- [Installation & Setup](#installation--setup)  
+- [Running the Application](#running-the-application)  
+- [Developer Workflows](#developer-workflows)  
+  - [Register & Login (Web)](#register--login-web)  
+  - [Generate API Key](#generate-api-key)  
+- [API Usage](#api-usage)  
+  - [Authentication](#authentication)  
+  - [Endpoints](#endpoints)  
+    - [List Users](#list-users)  
+    - [Create User](#create-user)  
+    - [Retrieve User](#retrieve-user)  
+    - [Update User](#update-user)  
+    - [Delete User](#delete-user)  
+- [Error Responses](#error-responses)  
+- [Rate Limiting](#rate-limiting)  
+- [Environment Variables](#environment-variables)  
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Prerequisites
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- PHP 8.1+  
+- Composer  
+- SQLite (or MySQL/PostgreSQL in production)  
+- Node.js & NPM (optional, if adding custom frontend)  
+- Termux / Linux / macOS / Windows (WSL)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Installation & Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clone the repo**  
+   ```bash
+   git clone https://github.com/your‑username/developer‑portal.git
+   cd developer‑portal
+   ```
 
-### Premium Partners
+2. **Copy environment file**  
+   ```bash
+   cp .env.example .env
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+3. **Generate application key**  
+   ```bash
+   composer install
+   php artisan key:generate
+   ```
 
-## Contributing
+4. **Configure database** (default uses SQLite)  
+   - In `.env`, set:
+     ```
+     DB_CONNECTION=sqlite
+     DB_DATABASE=/full/path/to/developer-portal/database/database.sqlite
+     CACHE_DRIVER=file
+     SESSION_DRIVER=file
+     ```
+   - Create the SQLite file:
+     ```bash
+     mkdir database
+     touch database/database.sqlite
+     ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Run migrations**  
+   ```bash
+   php artisan migrate
+   ```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Running the Application
 
-## Security Vulnerabilities
+Start the built‑in server:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve --host=0.0.0.0 --port=8000
+```
 
-## License
+Visit your browser or API client at `http://127.0.0.1:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Developer Workflows
+
+### Register & Login (Web)
+
+- **Register** at:  
+  `GET  /register` → fill **Username**, **Email**, **Password**, **Confirm Password**  
+- **Login** at:  
+  `GET  /login` → enter **Email**, **Password**
+
+After login, you’ll be redirected to your **Dashboard**.
+
+### Generate API Key
+
+On the Dashboard, click **Generate API Key**. Your unique 32‑character key will be displayed.
+
+> **Keep this key secret!** All API calls require this header:
+> ```
+> X-API-KEY: YOUR_API_KEY
+> ```
+
+---
+
+## API Usage
+
+### Authentication
+
+All requests to `/api/users` must include your API key:
+
+```http
+X-API-KEY: 2umXQVcNH9sRbqXZ1L8vRjACAmdOYAfR
+```
+
+Base URL:
+
+```
+http://127.0.0.1:8000/api/users
+```
+
+### Endpoints
+
+#### List Users
+
+```
+GET /api/users
+```
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/users \
+  -H "X-API-KEY: YOUR_API_KEY"
+```
+
+#### Create User
+
+```
+POST /api/users
+Content-Type: application/json
+```
+
+Body (JSON):
+
+```json
+{
+  "phone": "0712345678",
+  "status": "active",
+  "uid": "UNIQUE_ID_001",
+  "remaining_days": 30,
+  "email": "foo@bar.com",
+  "password": "secret123",
+  "username": "foo_user"
+}
+```
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/users \
+  -H "Content-Type: application/json" \
+  -H "X-API-KEY: YOUR_API_KEY" \
+  -d '{
+    "phone":"0712345678",
+    "status":"active",
+    "uid":"UNIQUE_ID_001",
+    "remaining_days":30,
+    "email":"foo@bar.com",
+    "password":"secret123",
+    "username":"foo_user"
+  }'
+```
+
+#### Retrieve User
+
+```
+GET /api/users/{id}
+```
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/users/5 \
+  -H "X-API-KEY: YOUR_API_KEY"
+```
+
+#### Update User
+
+```
+PUT /api/users/{id}
+Content-Type: application/json
+```
+
+Body (JSON):
+
+```json
+{
+  "phone": "0711111111",
+  "status": "inactive",
+  "uid": "UNIQUE_ID_001",
+  "remaining_days": 0,
+  "email": "new@foo.com",
+  "username": "foo_new"
+}
+```
+
+```bash
+curl -X PUT http://127.0.0.1:8000/api/users/5 \
+  -H "Content-Type: application/json" \
+  -H "X-API-KEY: YOUR_API_KEY" \
+  -d '{ /* fields as above */ }'
+```
+
+#### Delete User
+
+```
+DELETE /api/users/{id}
+```
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/api/users/5 \
+  -H "X-API-KEY: YOUR_API_KEY"
+```
+
+---
+
+## Error Responses
+
+- **401 Unauthorized**  
+  Missing or invalid `X-API-KEY`.
+- **404 Not Found**  
+  Resource or route does not exist.
+- **422 Unprocessable Entity**  
+  Validation errors (missing or malformed fields).
+
+---
+
+## Rate Limiting
+
+- Default: **60 requests / minute** per developer.
+- Configured in `RouteServiceProvider` under the `api` rate limiter.
+
+---
+
+## Environment Variables
+
+In your `.env` (production), ensure:
+
+```dotenv
+APP_NAME="Developer Portal"
+APP_ENV=production
+APP_KEY=base64:...
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+DB_CONNECTION=mysql
+DB_HOST=...
+DB_PORT=3306
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+
+CACHE_DRIVER=file
+SESSION_DRIVER=database
+
+# Other services...
+```
+
+---
+
+**Happy coding!** If you encounter any issues, please open an issue or contact the maintainer.

@@ -2,6 +2,7 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use App\Http\Middleware\CheckApiKey;
 
 class Kernel extends HttpKernel
 {
