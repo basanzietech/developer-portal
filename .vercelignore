@@ -1,0 +1,7 @@
+node_modules/
+tests/
+storage/
+resources/
+.env
+vite.config.js
+package.json
