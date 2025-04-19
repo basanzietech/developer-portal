@@ -1,4 +1,3 @@
-```markdown
 # Developer Portal API
 
 This repository provides a simple Laravel‑based Developer Portal where developers can:
@@ -46,7 +45,7 @@ This repository provides a simple Laravel‑based Developer Portal where develop
 
 1. **Clone the repo**  
    ```bash
-   git clone https://github.com/your‑username/developer‑portal.git
+   git clone https://github.com/basanzietech/developer‑portal.git
    cd developer‑portal
    ```
 
