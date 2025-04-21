@@ -12,7 +12,7 @@ class CheckApiKey
         $key = $request->header('X-API-KEY');
         $dev = Developer::where('api_key', $key)->first();
         if (! $dev) {
-            return response()->json(['message'=>'Invalid API Key'], 401);
+            return response()->json(['message' => 'Invalid API Key'], 401);
         }
         $request->merge(['developer' => $dev]);
         return $next($request);

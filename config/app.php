@@ -160,6 +160,8 @@ return [
     Illuminate\Translation\TranslationServiceProvider::class,      // ✔ translator binding
     Illuminate\Validation\ValidationServiceProvider::class,
     Illuminate\View\ViewServiceProvider::class,
+    
+    Illuminate\Session\SessionServiceProvider::class,   //
 
     /*
      * Package Service Providers...

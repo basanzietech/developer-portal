@@ -18,4 +18,8 @@ class Developer extends Authenticatable
     ];
 
     // relations...
+     public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
