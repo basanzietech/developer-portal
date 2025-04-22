@@ -1,24 +1,30 @@
 <?php
-
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class ApiKeyController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        return view('dashboard');
+        $dev       = $request->user();
+        $userCount = $dev->users()->count();
+
+        return view('dashboard', [
+            'apiKey'    => $dev->api_key,
+            'userCount' => $userCount,
+        ]);
     }
 
     public function generate(Request $request)
     {
-        $user = Auth::user();
-        $user->api_key = Str::random(32);
-        $user->save();
+        $dev = $request->user();
+        $dev->api_key = \Illuminate\Support\Str::random(32);
+        $dev->save();
 
-        return redirect()->route('dashboard')->with('success', 'API Key generated successfully.');
+        return redirect()
+            ->route('dashboard')
+            ->with('status', 'API Key generated successfully.');
     }
 }

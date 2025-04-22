@@ -9,64 +9,91 @@ use App\Models\Developer;
 
 class AuthController extends Controller
 {
-    // Onyesha fomu ya login
+    /**
+     * Show the login form.
+     */
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // Process login
+    /**
+     * Handle a login attempt.
+     */
     public function login(Request $request)
     {
+        // Validate incoming request
         $credentials = $request->validate([
             'email'    => 'required|email',
             'password' => 'required',
         ]);
 
+        // Attempt to log in
         if (Auth::attempt($credentials)) {
+            // Regenerate session to prevent fixation
             $request->session()->regenerate();
-            return redirect()->route('dashboard');
+
+            // Redirect to dashboard with success message
+            return redirect()
+                ->route('dashboard')
+                ->with('status', 'Login successful.');
         }
 
-        return back()->withErrors([
-            'email' => 'Credentials not matched.',
-        ]);
+        // On failure, redirect back with input and error message
+        return back()
+            ->withInput($request->only('email'))
+            ->with('status', 'Invalid credentials.');
     }
 
-    // Onyesha fomu ya register
+    /**
+     * Show the registration form.
+     */
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // Process registration
+    /**
+     * Handle a registration request.
+     */
     public function register(Request $request)
     {
+        // Validate incoming request
         $data = $request->validate([
-            'username' => 'required|string|unique:developers',
-            'email'    => 'required|email|unique:developers',
-            'password' => 'required|min:6|confirmed',
+            'username'              => 'required|string|unique:developers',
+            'email'                 => 'required|email|unique:developers',
+            'password'              => 'required|min:6|confirmed',
         ]);
 
-        // Hash password
+        // Hash the password
         $data['password'] = Hash::make($data['password']);
 
-        // Create developer
+        // Create the developer account
         $developer = Developer::create($data);
 
-        // Login immediately
+        // Log the new developer in
         Auth::login($developer);
 
-        return redirect()->route('dashboard');
+        // Redirect to dashboard with success message
+        return redirect()
+            ->route('dashboard')
+            ->with('status', 'Registration successful.');
     }
 
-    // Logout
+    /**
+     * Log the developer out.
+     */
     public function logout(Request $request)
     {
         Auth::logout();
+
+        // Invalidate and regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        // Redirect to login with a message
+        return redirect()
+            ->route('login')
+            ->with('status', 'Logged out successfully.');
     }
 }

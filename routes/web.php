@@ -4,6 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ApiKeyController;
 
+// Landing page
+Route::get('/', function () {
+    return view('index');
+})->name('home');
+
+
 // show login & register forms
 Route::get('login',    [AuthController::class,'showLogin'])->name('login');
 Route::post('login',   [AuthController::class,'login']);
